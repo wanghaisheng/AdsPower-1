@@ -8,11 +8,17 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 import selenium.common.exceptions
+import random
 
 
 class WrongTwitter(Exception):
     def __init__(self, message='Problems with Twitter'):
         super(WrongTwitter, self).__init__(message)
+
+
+class WrongDiscord(Exception):
+    def __init__(self, message='Problems with Discord'):
+        super(WrongDiscord, self).__init__(message)
 
 
 class Selenium:
@@ -38,14 +44,16 @@ class Selenium:
         options.headless = True
         self.driver = uc.Chrome(version_main=self.webdriver, options=options)
 
-    def test(self):
-        self.driver.get('https://coinsniper.net/')
-        input()
-
     def close(self):
         url = 'http://local.adspower.com:50325/api/v1/browser/stop'
         prms = {'user_id': self.key}
         requests.get(url, params=prms)
+
+    def hum_write(self, text, elem):
+        for buk in text:
+            elem.send_keys(buk)
+            sleep = round(random.uniform(0.5, 0.10), 2)
+            time.sleep(sleep)
 
     def close_all_tabs(self):
         n_tabs = len(self.driver.window_handles) - 1
@@ -75,7 +83,9 @@ class Selenium:
         wait.until(EC.presence_of_element_located((By.XPATH, "//*[text()='Import wallet']"))).click()
         wait.until(EC.presence_of_element_located((By.XPATH, "//*[text()='No Thanks']"))).click()
         for number, word in enumerate(self.mnemo.split()):
-            wait.until(EC.presence_of_element_located((By.XPATH, f"//input[@id='import-srp__srp-word-{number}']"))).send_keys(word)
+            wait.until(
+                EC.presence_of_element_located((By.XPATH, f"//input[@id='import-srp__srp-word-{number}']"))).send_keys(
+                word)
 
         wait.until(EC.presence_of_element_located((By.XPATH, f"//input[@id='password']"))).send_keys('11111111')
         wait.until(EC.presence_of_element_located((By.XPATH, f"//input[@id='confirm-password']"))).send_keys('11111111')
@@ -93,7 +103,8 @@ class Selenium:
     def wallet_connect(self):
         wait = WebDriverWait(self.driver, 4)
         wait.until(EC.presence_of_element_located((By.XPATH, "//a[text()='Connect']"))).click()
-        wait.until(EC.presence_of_element_located((By.XPATH, "//*[@class='btn btn-styled btn-base-1 btn-block btn-circle']"))).click()
+        wait.until(EC.presence_of_element_located(
+            (By.XPATH, "//*[@class='btn btn-styled btn-base-1 btn-block btn-circle']"))).click()
         wait.until(EC.presence_of_element_located((By.XPATH, "//*[text()='Connect to your MetaMask Wallet']"))).click()
         time.sleep(1)
         self.driver.switch_to.window(self.driver.window_handles[-1])
@@ -105,7 +116,8 @@ class Selenium:
         wait.until(EC.presence_of_element_located((By.XPATH, "//*[text()='Sign']"))).click()
         time.sleep(1)
         self.driver.switch_to.window(self.driver.window_handles[-1])
-        wait.until(EC.presence_of_element_located((By.XPATH, '//*[text()="Click here if you\'d like to connect a new wallet to your account"]')))
+        wait.until(EC.presence_of_element_located(
+            (By.XPATH, '//*[text()="Click here if you\'d like to connect a new wallet to your account"]')))
 
     def connect_twitter(self):
         wait = WebDriverWait(self.driver, 4)
@@ -115,13 +127,16 @@ class Selenium:
             self.driver.switch_to.new_window()
             self.driver.get('https://premint.xyz/disconnect/')
             self.driver.switch_to.window(self.driver.window_handles[-1])
-            wait.until(EC.presence_of_element_located((By.XPATH, "// *[ @ id = 'st-container'] // a[contains(@href, 'twitter')]"))).click()
+            wait.until(EC.presence_of_element_located(
+                (By.XPATH, "// *[ @ id = 'st-container'] // a[contains(@href, 'twitter')]"))).click()
             time.sleep(2)
             self.driver.close()
             self.driver.switch_to.window(self.driver.window_handles[-1])
             wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id='step-twitter']//a"))).click()
-            wait.until(EC.presence_of_element_located((By.XPATH, "//*[@class='btn btn-styled btn-base-1 btn-block btn-circle']"))).click()
-            wait.until(EC.presence_of_element_located((By.XPATH, "//*[text()='Connect to your MetaMask Wallet']"))).click()
+            wait.until(EC.presence_of_element_located(
+                (By.XPATH, "//*[@class='btn btn-styled btn-base-1 btn-block btn-circle']"))).click()
+            wait.until(
+                EC.presence_of_element_located((By.XPATH, "//*[text()='Connect to your MetaMask Wallet']"))).click()
             time.sleep(1)
             self.driver.switch_to.window(self.driver.window_handles[-1])
             wait.until(EC.presence_of_element_located((By.XPATH, "//*[text()='Sign']"))).click()
@@ -155,6 +170,22 @@ class Selenium:
         self.connect_twitter()
         self.register()
 
+    def check_discord(self):
+        wait = WebDriverWait(self.driver, 5)
+        home_button = None
+        self.driver.get('https://discord.com/channels/@me')
+        # discord home icon
+        try:
+            home_button = wait.until(
+                EC.presence_of_element_located((By.XPATH, "//*[contains(concat(' ', @class, ' '), ' homeIcon')]")))
+        except selenium.common.exceptions.TimeoutException:
+            pass
+        if home_button is None:
+            login_button = self.driver.find_element(By.XPATH, "//button[@type='submit']")
+            email_input = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@name='email']"))).send_keys('Haha')
+            self.hum_write('AShjdjqkkwjqeqwe', email_input)
+
+
     def check_twitter(self):
         wait = WebDriverWait(self.driver, 3)
         self.driver.get('https://twitter.com/home')
@@ -165,13 +196,16 @@ class Selenium:
         except selenium.common.exceptions.TimeoutException:
             pass
         try:
-            wait.until(EC.presence_of_element_located((By.XPATH, "//span[text()='Your account is suspended and is not permitted to perform this action.']")))
+            wait.until(EC.presence_of_element_located(
+                (By.XPATH, "//span[text()='Your account is suspended and is not permitted to perform this action.']")))
             raise WrongTwitter()
         except selenium.common.exceptions.TimeoutException:
             pass
         try:
-            wait.until(EC.presence_of_element_located((By.XPATH, "//span[text()=\"This request looks like it might be automated. To protect our users from spam and other malicious activity, we can’t complete this action right now. Please try again later.\"]")))
-        except selenium.common.exceptions.TimeoutException:
+            self.driver.find_element(By.XPATH,
+                                     "//span[text()=\"This request looks like it might be automated. To protect our users from spam and other malicious activity, we can’t complete this action right now. Please try again later.\"]")
+            raise WrongTwitter()
+        except selenium.common.exceptions.NoSuchElementException:
             pass
 
     def browser_preparation(self):
@@ -203,8 +237,7 @@ class Worker:
     def __init__(self):
         with open('datas.json') as file:
             self.base = json.load(file)
-        self.nums = [17, 34, 40, 41, 43, 44, 53, 56, 58, 61, 62, 64]
-
+        self.nums = [58]
 
     def refresh(self):
         with open('results.json') as file:
@@ -221,7 +254,7 @@ class Worker:
             json.dump(content, file_w, indent=4)
 
     def main(self):
-        self.refresh()
+        # self.refresh()
         for el in self.base:
             if el['name'] in self.nums:
                 try:
@@ -236,11 +269,11 @@ class Worker:
                     selen.close()
 
 
-
 if __name__ == '__main__':
-    x = Worker()
-    x.main()
-    # x = Selenium('j32b1a8', 'x')
-    # x.start()
-    # x.connect()
-    # x.code_input()
+    # x = Worker()
+    # x.main()
+    x = Selenium('j329vl3', 'x')
+    x.start()
+    x.connect()
+    x.code_input()
+    x.close()
