@@ -203,7 +203,7 @@ class Worker:
     def __init__(self):
         with open('datas.json') as file:
             self.base = json.load(file)
-        self.nums = [1, 3, 4, 7, 8, 13, 16, 18, 19, 22, 35, 36, 37, 5, 6, 9, 10, 11, 12, 14, 15, 21, 27, 30, 50, 52, 54, 55, 57, 68, 69, 70, 71, 72, 73, 76, 77, 79, 80, 81, 82, 83, 84, 85, 87, 88, 89, 92, 93]
+        self.nums = [17, 34, 40, 41, 43, 44, 53, 56, 58, 61, 62, 64]
 
 
     def refresh(self):
@@ -223,7 +223,7 @@ class Worker:
     def main(self):
         self.refresh()
         for el in self.base:
-            if el['name'] not in self.nums:
+            if el['name'] in self.nums:
                 try:
                     selen = Selenium(el['id'], el['mnemo'])
                     selen.main()
