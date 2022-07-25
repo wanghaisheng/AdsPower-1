@@ -355,7 +355,7 @@ class Selenium:
         wait.until(EC.element_to_be_clickable((By.XPATH, "//div[text()='Publish']"))).click()
         wait.until(EC.element_attribute_to_include((By.XPATH, "//*[@id='publish-button']"), 'disabled'))
         os.remove(random_img)
-        time.sleep(5)
+        time.sleep(15)
 
 
     def main(self):
@@ -400,7 +400,7 @@ class Worker:
                 except Exception:
                     self.save({'Name': el['name'], 'Result': 'Fail'})
                     selen.close()
-                time.sleep(45)
+                time.sleep(35)
 
 
 if __name__ == '__main__':
