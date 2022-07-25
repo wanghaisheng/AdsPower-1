@@ -390,7 +390,7 @@ class Worker:
         for el in self.base:
             if el['name'] not in [1, 3, 4]:
                 try:
-                    selen = Selenium(el['id'])
+                    selen = Selenium(el['name'])
                     selen.start()
                     selen.connect()
                     selen.close_all_tabs()
