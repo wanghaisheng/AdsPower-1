@@ -1,14 +1,13 @@
 import json
+import codecs
 
-with open('results.json') as file:
-    con = json.load(file)
+with open('names.txt', encoding='utf-8') as file:
+    con = file.readlines()
 
-x = []
+s = []
 
 for el in con:
-    if el['Result'] == 'BadTwitter':
-        x.append(el['Name'])
+    s.append(el.strip())
 
-x.sort()
-
-print(x)
+with open('test.json', 'w', encoding='utf-8') as file_w:
+    json.dump(s, file_w, indent=4, ensure_ascii=False)
