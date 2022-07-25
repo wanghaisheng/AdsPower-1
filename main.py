@@ -387,24 +387,27 @@ class Worker:
             json.dump(content, file_w, indent=4)
 
     def main(self):
-        # self.refresh()
         for el in self.base:
             if el['name'] not in [1, 3, 4]:
                 try:
                     selen = Selenium(el['id'])
+                    selen.start()
+                    selen.connect()
                     selen.close_all_tabs()
                     selen.Youtube_create_acs()
+                    selen.close()
                     self.save({'Name': el['name'], 'Result': 'Success'})
                 except Exception:
                     self.save({'Name': el['name'], 'Result': 'Fail'})
+                    selen.close()
                 time.sleep(45)
 
 
 if __name__ == '__main__':
-    # x = Worker()
-    # x.main()
-    x = Selenium(4)
-    x.start()
-    x.connect()
-    x.code_input()
-    x.close()
+    x = Worker()
+    x.main()
+    # x = Selenium(4)
+    # x.start()
+    # x.connect()
+    # x.code_input()
+    # x.close()
